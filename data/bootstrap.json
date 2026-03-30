@@ -19,6 +19,8 @@
     ],
     "reservation": {
       "leadTimeDays": 1,
+      "slotMinutes": 60,
+      "availabilityWindowDays": 14,
       "channels": ["web", "電話"],
       "formHints": [
         "初診/再診を選択",
@@ -194,32 +196,47 @@
       "patientName": "田中 みどり",
       "doctor": "高橋",
       "reason": "右上臼歯の冷水痛",
+      "chiefComplaint": "右上の歯がしみる",
+      "concernArea": "右上臼歯部",
+      "symptoms": "冷たいものがしみる / 噛むと違和感",
+      "patientRequest": "原因と必要な処置を先に知りたい",
+      "consultationNotes": "仕事後に来院希望。説明は図解を併用。",
       "channel": "web",
       "memo": "仕事後に来院希望。説明は図解を併用。"
     },
     {
       "id": "apt-105",
       "date": "2026-04-01",
-      "time": "10:00",
+      "time": "10:30",
       "status": "tentative",
       "type": "初診",
       "patientId": "p-002",
       "patientName": "佐藤 翔太",
       "doctor": "佐々木",
       "reason": "親知らずの腫れ",
+      "chiefComplaint": "左下の親知らずまわりが腫れる",
+      "concernArea": "下顎左側智歯周囲",
+      "symptoms": "腫れ / 圧痛 / 食事時の違和感",
+      "patientRequest": "抜歯の必要性と時期を知りたい",
+      "consultationNotes": "週末に再診候補を案内したい。",
       "channel": "web",
       "memo": "週末に再診候補を案内したい。"
     },
     {
       "id": "apt-108",
       "date": "2026-04-03",
-      "time": "14:00",
+      "time": "14:30",
       "status": "confirmed",
       "type": "再診",
       "patientId": "p-003",
       "patientName": "鈴木 花音",
       "doctor": "高橋",
       "reason": "前歯の見た目相談",
+      "chiefComplaint": "前歯の色が気になる",
+      "concernArea": "前歯部",
+      "symptoms": "色調差 / 形態の違和感",
+      "patientRequest": "見た目を整える方法を相談したい",
+      "consultationNotes": "審美相談。参考写真の持参を案内。",
       "channel": "phone",
       "memo": "審美相談。参考写真の持参を案内。"
     },
@@ -233,6 +250,11 @@
       "patientName": "山本 亮介",
       "doctor": "佐々木",
       "reason": "歯周検診",
+      "chiefComplaint": "定期検診を受けたい",
+      "concernArea": "歯周部位",
+      "symptoms": "自覚症状は少ない / 清掃不良が気になる",
+      "patientRequest": "短く要点を知りたい",
+      "consultationNotes": "午前希望。要点を短く伝える。",
       "channel": "web",
       "memo": "午前希望。要点を短く伝える。"
     }
@@ -243,11 +265,11 @@
       "patientId": "p-001",
       "visitId": "v-2334",
       "takenAt": "2026-03-18T15:20:00+09:00",
-      "fileName": "p001_20260318_panorama.png",
+      "fileName": "panorama-01.png",
       "mimeType": "image/png",
       "bodyPart": "上顎右側臼歯",
       "view": "パノラマ",
-      "storageHint": "/samples/xray/p001-20260318-panorama.png",
+      "storageHint": "/assets/xrays/panorama-01.png",
       "meta": {
         "width": 1600,
         "height": 900,
@@ -265,11 +287,11 @@
       "patientId": "p-002",
       "visitId": "v-2390",
       "takenAt": "2026-03-12T11:05:00+09:00",
-      "fileName": "p002_20260312_periapical.png",
+      "fileName": "molar-01.png",
       "mimeType": "image/png",
       "bodyPart": "下顎左側智歯周囲",
       "view": "デンタル",
-      "storageHint": "/samples/xray/p002-20260312-dental.png",
+      "storageHint": "/assets/xrays/molar-01.png",
       "meta": {
         "width": 1200,
         "height": 800,
@@ -287,11 +309,11 @@
       "patientId": "p-003",
       "visitId": "v-2381",
       "takenAt": "2026-02-27T09:40:00+09:00",
-      "fileName": "p003_20260227_front.png",
-      "mimeType": "image/jpeg",
+      "fileName": "anterior-01.png",
+      "mimeType": "image/png",
       "bodyPart": "前歯部",
       "view": "口内写真",
-      "storageHint": "/samples/xray/p003-20260227-front.jpg",
+      "storageHint": "/assets/xrays/anterior-01.png",
       "meta": {
         "width": 1400,
         "height": 1050,
@@ -317,6 +339,27 @@
         "補綴境界と二次う蝕の可能性を再確認する",
         "必要なら追加撮影や口腔内所見で裏取りする"
       ],
+      "quickOverview": {
+        "summary": "右上臼歯の冷水痛と咬合時違和感を中心に確認する。",
+        "highlights": [
+          "主訴: 右上の歯がしみる",
+          "疾患部: 右上臼歯部",
+          "患者要望: 原因と必要な処置を先に知りたい"
+        ],
+        "contextTags": [
+          "右上の歯がしみる",
+          "右上臼歯部"
+        ]
+      },
+      "checklist": [
+        "主訴と疾患部が一致しているか確認する",
+        "補綴境界と二次う蝕の可能性を再確認する",
+        "必要なら追加撮影や口腔内所見で裏取りする"
+      ],
+      "explanation": {
+        "clinician": "右上臼歯部の冷水痛と咬合時違和感を整理し、画像と問診を分けて確認する。",
+        "patient": "右上の歯について、画像で気になる場所と症状の出方を一緒に確認しながら説明する。"
+      },
       "patientExplanation": "右上の歯について、画像で気になる場所と症状の出方を一緒に確認しながら説明する。今の段階では原因を断定せず、先生が診察で最終判断する。",
       "referencePoints": [
         "診断補助として扱う",
@@ -335,6 +378,27 @@
         "智歯周囲炎の再燃パターンを整理する",
         "患者の通院可能日を確認する"
       ],
+      "quickOverview": {
+        "summary": "下顎左側智歯周囲の腫れと通院タイミングを整理する。",
+        "highlights": [
+          "主訴: 左下の親知らずまわりが腫れる",
+          "疾患部: 下顎左側智歯周囲",
+          "患者要望: 抜歯の必要性と時期を知りたい"
+        ],
+        "contextTags": [
+          "左下の親知らずまわりが腫れる",
+          "下顎左側智歯周囲"
+        ]
+      },
+      "checklist": [
+        "腫れの頻度と増悪条件を確認する",
+        "智歯周囲炎の再燃パターンを整理する",
+        "患者の通院可能日を確認する"
+      ],
+      "explanation": {
+        "clinician": "下顎左側智歯周囲の腫れを整理し、画像と症状を切り分けて確認する。",
+        "patient": "親知らずまわりの腫れについて、今ある情報を整理して説明する。"
+      },
       "patientExplanation": "親知らずまわりの腫れについて、今ある情報を整理して説明する。必要な処置やタイミングは診察で決める。",
       "referencePoints": [
         "清掃指導の継続",
@@ -345,7 +409,7 @@
   ],
   "clinicSite": {
     "hero": {
-      "title": "家族で通いやすい、やさしい歯科医院",
+      "title": "あおば歯科クリニック",
       "lead": "予約しやすく、説明がわかりやすい。はじめての方も安心してご相談いただけます。",
       "cta": [
         {

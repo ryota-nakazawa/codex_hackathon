@@ -6,15 +6,16 @@
     <title>患者詳細 | Dental Clinic PoC</title>
     <meta name="description" content="歯科医院の患者詳細画面" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/patient-page.css" />
   </head>
   <body class="page page-patient">
     <div class="page-shell">
       <header class="app-header clinical-header">
         <div class="brand">
-          <span class="brand-mark">DC</span>
+          <span class="brand-mark">AO</span>
           <span>
-            <strong>Dental Clinic PoC</strong>
-            <small>患者詳細</small>
+            <strong>あおば歯科クリニック</strong>
+            <small>患者詳細 / AI解析</small>
           </span>
         </div>
         <nav class="header-nav" aria-label="主な画面">
@@ -25,66 +26,100 @@
       </header>
 
       <main class="patient-main">
-        <section class="page-summary patient-summary">
-          <div>
-            <div class="section-label dark">患者詳細画面</div>
-            <h1 id="patientTitle">患者詳細</h1>
-            <p class="lead" id="patientLead"></p>
+        <section class="panel patient-header-panel">
+          <div class="patient-header-top">
+            <a class="back-link" href="/dashboard">予約一覧へ戻る</a>
+            <span class="status-chip">PATIENT DETAIL</span>
           </div>
-          <div class="button-row">
-            <a class="secondary-button" href="/dashboard">予約一覧へ戻る</a>
+          <div class="patient-header-copy">
+            <div>
+              <div class="section-label dark">患者詳細</div>
+              <h1 id="patientTitle">患者詳細</h1>
+              <p class="lead" id="patientLead"></p>
+            </div>
+            <div class="patient-meta" id="patientMeta"></div>
           </div>
         </section>
 
-        <section class="patient-grid">
-          <article class="panel clinical-panel">
-            <div class="panel-head">
-              <div>
-                <div class="section-label dark">基本情報</div>
-                <h2>患者プロフィール</h2>
+        <section class="case-layout">
+          <aside class="case-rail">
+            <article class="panel clinical-panel rail-panel">
+              <div class="panel-head">
+                <div>
+                  <div class="section-label dark">History</div>
+                  <h2>患者の過去レポート</h2>
+                </div>
               </div>
-            </div>
-            <div class="info-grid" id="patientProfile"></div>
-          </article>
+              <div class="history-list" id="reportHistoryList"></div>
+            </article>
 
-          <article class="panel clinical-panel">
-            <div class="panel-head">
-              <div>
-                <div class="section-label dark">予約履歴</div>
-                <h2>予約と来院の流れ</h2>
+            <article class="panel clinical-panel rail-panel">
+              <div class="panel-head">
+                <div>
+                  <div class="section-label dark">Input</div>
+                  <h2>予約時ヒアリング</h2>
+                </div>
               </div>
-            </div>
-            <div class="stack-grid" id="patientAppointments"></div>
-          </article>
+              <div class="context-grid" id="reservationContext"></div>
+            </article>
+          </aside>
+
+          <div class="case-center">
+            <article class="panel clinical-panel workspace-panel">
+              <div class="panel-head">
+                <div>
+                  <div class="section-label dark">Case Workspace</div>
+                  <h2>症例ワークスペース</h2>
+                </div>
+                <div class="workspace-mini-meta" id="selectedCaseMeta"></div>
+              </div>
+              <div class="workspace-image-shell" id="workspaceImage"></div>
+            </article>
+
+            <article class="panel clinical-panel analysis-form-panel" id="analysisWorkspace">
+              <div class="panel-head">
+                <div>
+                  <div class="section-label dark">AI Analysis Input</div>
+                  <h2>レントゲンをアップロードして解析する</h2>
+                </div>
+              </div>
+
+              <form id="xrayAnalysisForm" class="analysis-form">
+                <div class="analysis-intro">
+                  <p>
+                    予約時に入力された主訴・疾患部・患者要望・コメントはすでに反映済みです。
+                    ここではレントゲン画像を添付するだけで解析できます。
+                  </p>
+                </div>
+
+                <label class="xray-upload-field">
+                  <span>レントゲン画像をアップロード</span>
+                  <input name="xrayImage" type="file" accept="image/png,image/jpeg,image/webp" required />
+                </label>
+
+                <div class="button-row">
+                  <button class="primary-button" type="submit">AI解析して保存</button>
+                  <button class="secondary-button" id="resetAnalysisForm" type="button">入力をクリア</button>
+                </div>
+                <div id="xrayAnalysisFeedback" class="message info">
+                  レントゲンをアップロードすると、予約時ヒアリングを使ってAIレポートが作成されます。
+                </div>
+              </form>
+            </article>
+          </div>
         </section>
 
-        <section class="patient-grid">
-          <article class="panel clinical-panel">
-            <div class="panel-head">
-              <div>
-                <div class="section-label dark">過去履歴</div>
-                <h2>診断補助レポート</h2>
-              </div>
-            </div>
-            <div class="stack-grid" id="patientReports"></div>
-          </article>
-
-          <article class="panel clinical-panel">
-            <div class="panel-head">
-              <div>
-                <div class="section-label dark">画像情報</div>
-                <h2>レントゲンメタ情報</h2>
-              </div>
-            </div>
-            <div class="stack-grid" id="patientXrays"></div>
-          </article>
+        <section class="report-board">
+          <article class="panel clinical-panel report-card-panel" id="reportSummaryPanel"></article>
+          <article class="panel clinical-panel report-card-panel" id="reportChecklistPanel"></article>
+          <article class="panel clinical-panel report-card-panel" id="reportExplanationPanel"></article>
         </section>
 
-        <section class="panel clinical-panel">
+        <section class="panel clinical-panel supplementary-panel">
           <div class="panel-head">
             <div>
-              <div class="section-label dark">新規記録</div>
-              <h2>この患者の記録を追加する</h2>
+              <div class="section-label dark">補足記録</div>
+              <h2>必要なときだけ追加する手入力メモ</h2>
             </div>
           </div>
           <form id="patientReportForm" class="form-grid">
@@ -94,47 +129,13 @@
             </label>
             <label>
               <span>本文</span>
-              <textarea name="body" rows="5" placeholder="症状の変化や次回の確認ポイントを入力"></textarea>
+              <textarea name="body" rows="4" placeholder="症状の変化や次回の確認ポイントを入力"></textarea>
             </label>
             <div class="button-row">
-              <button class="primary-button" type="submit">記録を追加</button>
+              <button class="secondary-button" type="submit">記録を追加</button>
             </div>
           </form>
-          <div id="patientReportFeedback" class="message info">追加した記録は、この患者の履歴に反映されます。</div>
-        </section>
-
-        <section class="panel clinical-panel">
-          <div class="panel-head">
-            <div>
-              <div class="section-label dark">レントゲンAI解析</div>
-              <h2>画像をアップロードして解析する</h2>
-            </div>
-          </div>
-          <form id="xrayAnalysisForm" class="form-grid">
-            <label>
-              <span>レントゲン画像</span>
-              <input name="xrayImage" type="file" accept="image/png,image/jpeg,image/webp" required />
-            </label>
-            <div class="two-column">
-              <label>
-                <span>撮影部位</span>
-                <input name="bodyPart" type="text" placeholder="例: 右上臼歯部" />
-              </label>
-              <label>
-                <span>撮影方向</span>
-                <input name="view" type="text" placeholder="例: デンタル / パノラマ" />
-              </label>
-            </div>
-            <label>
-              <span>所見メモ</span>
-              <textarea name="notes" rows="4" placeholder="例: 冷水痛と咬合時違和感がある。修復物周囲を確認したい。"></textarea>
-            </label>
-            <div class="button-row">
-              <button class="primary-button" type="submit">AI解析して保存</button>
-            </div>
-          </form>
-          <div id="xrayAnalysisFeedback" class="message info">画像を選ぶと、そのままAI解析レポートを生成して患者履歴へ反映します。</div>
-          <div class="stack-grid" id="xrayAnalysisResult"></div>
+          <div id="patientReportFeedback" class="message info">このメモは患者詳細の履歴に補足として追加されます。</div>
         </section>
       </main>
     </div>

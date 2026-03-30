@@ -9,14 +9,15 @@ function buildMarkdown(report) {
     `- 生成時刻: ${report.meta.generatedAt}`,
     `- 対象: ${report.meta.patientLabel}`,
     "",
-    "## 要約",
-    report.sections.summary,
+    "## Quick Overview",
+    report.sections.quickOverview.summary,
+    ...(report.sections.quickOverview.highlights || []).map((item) => `- ${item}`),
     "",
-    "## 要確認ポイント",
-    ...report.sections.checkpoints.map((item) => `- ${item}`),
+    "## Checklist",
+    ...report.sections.checklist.map((item) => `- ${item}`),
     "",
-    "## 患者説明文案",
-    report.sections.patientExplanation,
+    "## Explanation",
+    report.sections.explanation.patient,
     "",
     "## 参考観点",
     ...report.sections.referencePoints.map((item) => `- ${item}`),
@@ -38,21 +39,27 @@ function wrapLiveReport(input, liveReport, warnings = []) {
         hasImage: Boolean(input.image),
         hasTextInputs: Boolean(input.chartNotes || input.patientRequest),
         hasChartNotes: Boolean(input.chartNotes),
-        hasPatientRequest: Boolean(input.patientRequest)
+        hasPatientRequest: Boolean(input.patientRequest),
+        hasInterview: Boolean(input.patientInterview && Object.values(input.patientInterview).some(Boolean)),
+        hasReservationContext: Boolean(input.analysisContext && Object.keys(input.analysisContext).length)
       },
       constraintFlags: {
         avoidImageDerivedSuggestions: !input.image,
         avoidBackgroundClaims: !(input.chartNotes || input.patientRequest),
         requiresClinicianReview: true
       },
-      warnings
+      warnings,
+      analysisContext: input.analysisContext || {}
     },
     sections: {
-      summary: liveReport.summary,
-      checkpoints: liveReport.checkpoints,
-      patientExplanation: liveReport.patientExplanation,
+      quickOverview: liveReport.quickOverview,
+      checklist: liveReport.checklist,
+      explanation: liveReport.explanation,
       referencePoints: liveReport.referencePoints,
-      disclaimer: liveReport.disclaimer
+      disclaimer: liveReport.disclaimer,
+      summary: liveReport.quickOverview.summary,
+      checkpoints: liveReport.checklist,
+      patientExplanation: liveReport.explanation.patient
     }
   };
 

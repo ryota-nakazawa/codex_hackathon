@@ -67,6 +67,21 @@ test("GET /api/bootstrap returns patients and appointments", async () => {
     assert.equal(payload.ok, true);
     assert.ok(payload.patients.length >= 1);
     assert.ok(payload.appointments.length >= 1);
+    assert.ok(payload.availability);
+    assert.ok(Array.isArray(payload.availability.days));
+  });
+});
+
+test("GET /api/availability returns hourly slots", async () => {
+  await withServer(async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/availability`);
+    const payload = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(payload.ok, true);
+    assert.equal(payload.availability.slotMinutes, 60);
+    assert.ok(Array.isArray(payload.availability.days));
+    assert.ok(payload.availability.days.some((day) => Array.isArray(day.slots) && day.slots.length > 0));
   });
 });
 
@@ -88,7 +103,7 @@ test("POST /api/generate-report returns report for memo-only input", async () =>
     assert.equal(response.status, 200);
     assert.equal(payload.ok, true);
     assert.equal(payload.report.meta.modeUsed, "fallback");
-    assert.match(payload.report.sections.summary, /画像情報がないため|画像由来/);
+    assert.match(payload.report.sections.quickOverview.summary, /テキスト入力から/);
   });
 });
 

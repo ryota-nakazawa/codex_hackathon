@@ -30,35 +30,106 @@ function buildCombinedSignalSummary(signals) {
 
 function buildContext(input) {
   const hasImage = Boolean(input.image);
-  const hasText = Boolean(input.chartNotes || input.patientRequest);
-  const signals = extractSignals(`${input.chartNotes} ${input.patientRequest}`);
+  const interview = input.patientInterview || {};
+  const analysisContext = input.analysisContext || {};
+  const reservation = analysisContext.latestAppointment || {};
+  const textSource = [
+    input.chartNotes,
+    input.patientRequest,
+    interview.chiefComplaint,
+    interview.symptoms,
+    interview.patientRequest,
+    interview.notes,
+    analysisContext.chiefComplaint,
+    analysisContext.concernArea,
+    analysisContext.patientRequest,
+    analysisContext.consultationNotes,
+    reservation.chiefComplaint,
+    reservation.concernArea,
+    reservation.patientRequest,
+    reservation.consultationNotes
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const hasText = Boolean(textSource);
+  const signals = extractSignals(textSource);
+  const hasReservationContext = Boolean(
+    analysisContext.chiefComplaint ||
+      analysisContext.concernArea ||
+      analysisContext.patientRequest ||
+      analysisContext.consultationNotes ||
+      reservation.chiefComplaint ||
+      reservation.concernArea ||
+      reservation.patientRequest ||
+      reservation.consultationNotes
+  );
 
   return {
     hasImage,
     hasText,
+    hasReservationContext,
     signals,
     signalSummary: buildCombinedSignalSummary(signals),
-    patientLabel: input.patientId || input.caseId || "未設定症例"
+    patientLabel: input.patientId || input.caseId || "未設定症例",
+    analysisContext,
+    interview
   };
 }
 
-function buildSummary(context) {
-  if (context.hasImage && context.hasText) {
-    return `患者要望・カルテ要点・画像情報を合わせると、${context.signalSummary}。画像由来の示唆と問診由来の背景情報を切り分けつつ、最終判断前の整理に使う前提です。`;
+function buildQuickOverview(context) {
+  const interview = context.interview || {};
+  const analysisContext = context.analysisContext || {};
+  const reservation = analysisContext.latestAppointment || {};
+  const chiefComplaint = interview.chiefComplaint || analysisContext.chiefComplaint || reservation.chiefComplaint || "";
+  const concernArea = interview.concernArea || analysisContext.concernArea || reservation.concernArea || "";
+  const patientRequest = interview.patientRequest || analysisContext.patientRequest || reservation.patientRequest || "";
+
+  const highlights = [
+    chiefComplaint || "主訴未設定",
+    concernArea || "疾患部未設定",
+    patientRequest || "患者要望未入力"
+  ];
+
+  if (context.hasImage) {
+    highlights.push("レントゲン画像あり");
   }
   if (context.hasText) {
-    return `テキスト入力から、${context.signalSummary}。画像情報がないため、部位や骨・歯根周囲の評価は診察時に追加確認してください。`;
+    highlights.push("ヒアリング情報あり");
   }
-  return "レントゲン画像のみが入力されています。画像上で気になる部位や左右差の有無は整理できますが、症状背景や患者要望は未反映のため断定は避ける前提です。";
+
+  return {
+    title: context.signalSummary,
+    summary: context.hasImage && context.hasText && context.hasReservationContext
+      ? `予約時の情報、ヒアリング、レントゲン画像を合わせると、${context.signalSummary}。`
+      : context.hasImage && context.hasText
+        ? `ヒアリングとレントゲン画像を合わせると、${context.signalSummary}。`
+        : context.hasText && context.hasReservationContext
+          ? `予約時の情報とヒアリングから、${context.signalSummary}。`
+          : context.hasText
+            ? `テキスト入力から、${context.signalSummary}。`
+        : "レントゲン画像のみが入力されています。",
+    highlights,
+    contextTags: [chiefComplaint, concernArea, patientRequest].filter(Boolean)
+  };
 }
 
-function buildCheckpoints(context) {
+function buildChecklist(context) {
   const items = [];
+  const interview = context.interview || {};
+  const analysisContext = context.analysisContext || {};
+  const reservation = analysisContext.latestAppointment || {};
+  const chiefComplaint = interview.chiefComplaint || analysisContext.chiefComplaint || reservation.chiefComplaint || "";
+  const concernArea = interview.concernArea || analysisContext.concernArea || reservation.concernArea || "";
+  const patientRequest = interview.patientRequest || analysisContext.patientRequest || reservation.patientRequest || "";
+  const consultationNotes = analysisContext.consultationNotes || reservation.consultationNotes || "";
 
   if (context.hasText) {
-    items.push("主訴の部位、誘因、持続時間がカルテ要点と一致しているか確認する。");
+    items.push(`主訴「${chiefComplaint || "未設定"}」と疾患部「${concernArea || "未設定"}」が一致しているか確認する。`);
     items.push("既往処置、服薬、アレルギー、来院理由の優先順位を再確認する。");
-    items.push("患者要望が、疼痛緩和・審美・機能回復のどれに近いかを明確にする。");
+    items.push(`患者要望${patientRequest ? `「${patientRequest}」` : "の有無"}を、疼痛緩和・審美・機能回復のどれに近いか整理する。`);
+    if (consultationNotes) {
+      items.push("予約時の相談メモとヒアリング内容の差分を確認する。");
+    }
   }
 
   if (context.hasImage) {
@@ -74,14 +145,30 @@ function buildCheckpoints(context) {
   return items;
 }
 
-function buildPatientExplanation(context) {
+function buildExplanation(context) {
+  const interview = context.interview || {};
+  const analysisContext = context.analysisContext || {};
+  const reservation = analysisContext.latestAppointment || {};
+  const chiefComplaint = interview.chiefComplaint || analysisContext.chiefComplaint || reservation.chiefComplaint || "";
+  const concernArea = interview.concernArea || analysisContext.concernArea || reservation.concernArea || "";
+  const patientRequest = interview.patientRequest || analysisContext.patientRequest || reservation.patientRequest || "";
+
   if (context.hasImage && context.hasText) {
-    return "現在ある情報をもとに、症状の背景と画像で気になる点を整理しています。ここから先は先生が実際のお口の状態と合わせて確認し、必要な検査や治療の選択肢を最終判断します。ご説明では、気になる場所、考えられる原因、次に確認する内容を順番にお伝えしやすい形にしています。";
+    return {
+      clinician: "予約時の主訴・疾患部・相談内容とレントゲン画像を合わせて、気になる点を整理しています。必要な検査や治療方針は先生が診察所見を踏まえて最終判断してください。",
+      patient: `現在の情報からは、${[chiefComplaint, concernArea, patientRequest].filter(Boolean).join(" / ")} を中心に確認しています。ここから先は先生が実際のお口の状態と合わせて確認し、必要な検査や治療の選択肢を決めます。`
+    };
   }
   if (context.hasText) {
-    return "現時点では主に問診やカルテ要点をもとに整理しています。画像確認前のため、場所や原因は断定せず、症状の経過と優先したいことを中心に説明する前提です。必要な検査は先生が診察時に判断します。";
+    return {
+      clinician: "現時点では主に予約時の情報とヒアリングをもとに整理しています。画像確認前のため、場所や原因は断定せず、症状の経過と優先したいことを中心に説明する前提です。",
+      patient: `今ある情報では、${[chiefComplaint, concernArea, patientRequest].filter(Boolean).join(" / ")} を中心に確認しています。必要な検査は先生が診察時に判断します。`
+    };
   }
-  return "現時点では画像から見て気になる部分を整理する段階です。症状の感じ方や生活背景がまだ分からないため、原因や治療内容はこの場で断定せず、先生が問診と診察を合わせて最終判断します。";
+  return {
+    clinician: "現時点では画像から見て気になる部分を整理する段階です。症状の感じ方や生活背景がまだ分からないため、原因や治療内容はこの場で断定せず、先生が問診と診察を合わせて最終判断してください。",
+    patient: "現時点では画像を見て気になる部分を整理しています。症状の感じ方や生活背景がまだ分からないため、原因や治療内容はこの場で断定しません。"
+  };
 }
 
 function buildReferencePoints(context) {
@@ -129,14 +216,15 @@ function buildMarkdown(report) {
     `- 生成時刻: ${report.meta.generatedAt}`,
     `- 対象: ${report.meta.patientLabel}`,
     "",
-    "## 要約",
-    section.summary,
+    "## Quick Overview",
+    section.quickOverview.summary,
+    ...section.quickOverview.highlights.map((item) => `- ${item}`),
     "",
-    "## 要確認ポイント",
-    ...section.checkpoints.map((item) => `- ${item}`),
+    "## Checklist",
+    ...section.checklist.map((item) => `- ${item}`),
     "",
-    "## 患者説明文案",
-    section.patientExplanation,
+    "## Explanation",
+    section.explanation.patient,
     "",
     "## 参考観点",
     ...section.referencePoints.map((item) => `- ${item}`),
@@ -148,6 +236,11 @@ function buildMarkdown(report) {
 
 function createReport(input, modeUsed, generator, warnings = []) {
   const context = buildContext(input);
+  const quickOverview = buildQuickOverview(context);
+  const checklist = buildChecklist(context);
+  const explanation = buildExplanation(context);
+  const referencePoints = buildReferencePoints(context);
+  const disclaimer = buildDisclaimer(context);
   const report = {
     meta: {
       requestedMode: input.mode,
@@ -159,21 +252,27 @@ function createReport(input, modeUsed, generator, warnings = []) {
         hasImage: context.hasImage,
         hasTextInputs: context.hasText,
         hasChartNotes: Boolean(input.chartNotes),
-        hasPatientRequest: Boolean(input.patientRequest)
+        hasPatientRequest: Boolean(input.patientRequest),
+        hasInterview: Boolean(input.patientInterview && Object.values(input.patientInterview).some(Boolean)),
+        hasReservationContext: Boolean(input.analysisContext && Object.keys(input.analysisContext).length)
       },
       constraintFlags: {
         avoidImageDerivedSuggestions: !context.hasImage,
         avoidBackgroundClaims: !context.hasText,
         requiresClinicianReview: true
       },
-      warnings
+      warnings,
+      analysisContext: input.analysisContext || {}
     },
     sections: {
-      summary: buildSummary(context),
-      checkpoints: buildCheckpoints(context),
-      patientExplanation: buildPatientExplanation(context),
-      referencePoints: buildReferencePoints(context),
-      disclaimer: buildDisclaimer(context)
+      quickOverview,
+      checklist,
+      explanation,
+      referencePoints,
+      disclaimer,
+      summary: quickOverview.summary,
+      checkpoints: checklist,
+      patientExplanation: explanation.patient
     }
   };
 

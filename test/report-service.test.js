@@ -31,7 +31,9 @@ test("fallback report includes markdown output", async () => {
   });
 
   assert.match(report.markdown, /# 補助レポート/);
-  assert.match(report.markdown, /## 要確認ポイント/);
+  assert.match(report.markdown, /## Checklist/);
+  assert.ok(report.sections.quickOverview);
+  assert.ok(report.sections.explanation);
 });
 
 test("dangerous text is sanitized in generated output", async () => {
@@ -44,6 +46,6 @@ test("dangerous text is sanitized in generated output", async () => {
     image: null
   });
 
-  assert.doesNotMatch(report.sections.summary, /<script>/);
+  assert.doesNotMatch(report.sections.quickOverview.summary, /<script>/);
   assert.doesNotMatch(report.markdown, /<script>/);
 });

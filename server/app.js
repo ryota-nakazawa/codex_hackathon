@@ -49,6 +49,26 @@ function sendCreatedJson(res, payload, location = "") {
   sendJson(res, 201, payload);
 }
 
+function buildInterviewSummary(interview) {
+  if (!interview) {
+    return "";
+  }
+
+  const items = [
+    interview.chiefComplaint,
+    interview.concernArea,
+    interview.symptoms,
+    interview.onset,
+    interview.aggravatingFactors,
+    interview.relievingFactors,
+    interview.priorTreatment,
+    interview.patientRequest,
+    interview.notes
+  ].filter(Boolean);
+
+  return items.join(" / ");
+}
+
 function assertSameOrigin(req) {
   const origin = req.headers.origin;
   if (!origin) {
@@ -177,6 +197,14 @@ function createApp(options = {}) {
         return;
       }
 
+      if (req.method === "GET" && url.pathname === "/api/availability") {
+        sendJson(res, 200, {
+          ok: true,
+          availability: store.getAvailability()
+        });
+        return;
+      }
+
       if (req.method === "GET" && url.pathname === "/api/appointments") {
         sendJson(res, 200, {
           ok: true,
@@ -281,21 +309,71 @@ function createApp(options = {}) {
           throw createValidationError("Content-Type は application/json を指定してください。");
         }
         const patientId = normalizeIdentifier(decodeURIComponent(segments[2]), "患者ID");
-        const patientRecord = store.getPatientRecord(patientId);
-        if (!patientRecord) {
+        const patientDetail = store.getPatientDetail(patientId);
+        if (!patientDetail) {
           throw createValidationError("患者が見つかりません。", 404);
         }
         const payload = await parseJsonBody(req);
         const input = validateXrayAnalysisPayload(payload);
+        const patientRecord = patientDetail.patient;
+        const reservationContext = patientDetail.caseContext || {};
+        const reservationInterview = reservationContext.patientInterview || {};
+        const mergedInterview = {
+          ...reservationInterview,
+          ...input.patientInterview
+        };
+        const interviewSummary = buildInterviewSummary(mergedInterview);
+        const patientRequest =
+          mergedInterview.patientRequest ||
+          reservationContext.patientRequest ||
+          patientRecord.mainConcern ||
+          patientRecord.chiefComplaint ||
+          "";
+        const chiefComplaint = mergedInterview.chiefComplaint || reservationContext.chiefComplaint || patientRecord.chiefComplaint || patientRecord.mainConcern || "";
+        const concernArea = input.concernArea || mergedInterview.concernArea || reservationContext.concernArea || patientRecord.mainConcern || patientRecord.chiefComplaint || "";
+        const consultationNotes = mergedInterview.notes || reservationContext.consultationNotes || patientRecord.notes || "";
+        const chartNotes = [
+          input.notes,
+          interviewSummary,
+          consultationNotes,
+          patientRecord.notes || ""
+        ]
+          .filter(Boolean)
+          .join(" / ");
+        const analysisContext = {
+          patientId,
+          patientName: patientRecord.name,
+          chiefComplaint,
+          concernArea,
+          patientRequest,
+          consultationNotes,
+          latestAppointment: reservationContext.latestAppointment || null,
+          patientInterview: mergedInterview,
+          patientSummary: patientRecord.notes || "",
+          reservationSummary: reservationContext.latestAppointment?.summary || ""
+        };
         const report = await generateReport({
           mode: input.mode,
           patientId,
           caseId: `XRAY-${patientId}`,
-          patientRequest: input.notes || patientRecord.mainConcern || patientRecord.chiefComplaint || "",
-          chartNotes: input.notes || patientRecord.notes || "",
+          patientRequest,
+          chartNotes,
+          patientInterview: mergedInterview,
+          analysisContext,
           image: input.image
         });
-        const analysis = store.addXrayAnalysis(patientId, input, report);
+        const analysis = store.addXrayAnalysis(patientId, {
+          ...input,
+          patientInterview: {
+            ...mergedInterview,
+            patientRequest: patientRequest || "",
+            chiefComplaint: chiefComplaint || "",
+            concernArea: concernArea || "",
+            notes: [mergedInterview.notes, consultationNotes].filter(Boolean).join(" / ")
+          },
+          notes: chartNotes,
+          analysisContext
+        }, report);
         if (!analysis) {
           throw createValidationError("患者が見つかりません。", 404);
         }

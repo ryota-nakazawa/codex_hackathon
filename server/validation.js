@@ -79,6 +79,22 @@ function normalizeOptionalBoolean(value) {
   return false;
 }
 
+function normalizePatientInterview(payload) {
+  const source = payload && typeof payload === "object" && !Array.isArray(payload) ? payload : {};
+
+  return {
+    chiefComplaint: normalizeOptionalText(source.chiefComplaint, 200, "ヒアリングの主訴"),
+    concernArea: normalizeOptionalText(source.concernArea, 200, "ヒアリングの疾患部"),
+    symptoms: normalizeOptionalText(source.symptoms, 1000, "ヒアリングの症状"),
+    onset: normalizeOptionalText(source.onset, 120, "ヒアリングの開始時期"),
+    aggravatingFactors: normalizeOptionalText(source.aggravatingFactors, 200, "ヒアリングの増悪条件"),
+    relievingFactors: normalizeOptionalText(source.relievingFactors, 200, "ヒアリングの軽減条件"),
+    priorTreatment: normalizeOptionalText(source.priorTreatment, 400, "ヒアリングの既往治療"),
+    patientRequest: normalizeOptionalText(source.patientRequest, 1000, "ヒアリングの要望"),
+    notes: normalizeOptionalText(source.notes, 2000, "ヒアリングの備考")
+  };
+}
+
 function parseImage(image) {
   if (!image) {
     return null;
@@ -133,7 +149,20 @@ function validateXrayAnalysisPayload(payload) {
     image,
     bodyPart: normalizeOptionalText(payload.bodyPart, 120, "撮影部位"),
     view: normalizeOptionalText(payload.view, 120, "撮影方向"),
-    notes: normalizeOptionalText(payload.notes, 2000, "所見メモ")
+    notes: normalizeOptionalText(payload.notes, 2000, "所見メモ"),
+    concernArea: normalizeOptionalText(payload.concernArea, 200, "疾患部"),
+    consultationNotes: normalizeOptionalText(payload.consultationNotes || payload.notes, 2000, "相談メモ"),
+    patientInterview: normalizePatientInterview(payload.patientInterview || payload.interview || {
+      chiefComplaint: payload.chiefComplaint,
+      concernArea: payload.concernArea,
+      symptoms: payload.symptoms,
+      onset: payload.onset,
+      aggravatingFactors: payload.aggravatingFactors,
+      relievingFactors: payload.relievingFactors,
+      priorTreatment: payload.priorTreatment,
+      patientRequest: payload.patientRequest,
+      notes: payload.patientNotes
+    })
   };
 }
 
@@ -217,6 +246,11 @@ function validateAppointmentPayload(payload) {
     visitType: normalizeOptionalText(payload.visitType, 40, "予約種別") || "初診",
     reason: normalizeOptionalText(payload.reason, 2000, "予約理由"),
     notes: normalizeOptionalText(payload.notes, 2000, "備考"),
+    chiefComplaint: normalizeOptionalText(payload.chiefComplaint, 200, "主訴"),
+    concernArea: normalizeOptionalText(payload.concernArea, 200, "疾患部"),
+    symptoms: normalizeOptionalText(payload.symptoms, 1000, "症状"),
+    patientRequest: normalizeOptionalText(payload.patientRequest, 1000, "患者要望"),
+    consultationNotes: normalizeOptionalText(payload.consultationNotes || payload.notes, 2000, "相談メモ"),
     firstVisit: normalizeOptionalBoolean(payload.firstVisit)
   };
 }
@@ -245,6 +279,7 @@ module.exports = {
   normalizeOptionalBoolean,
   normalizeOptionalDateTime,
   normalizeOptionalText,
+  normalizePatientInterview,
   sanitizeText,
   validateAppointmentPayload,
   validatePatientPayload,

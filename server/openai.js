@@ -12,15 +12,40 @@ const SYSTEM_PROMPT = [
 const REPORT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["summary", "checkpoints", "patientExplanation", "referencePoints", "disclaimer"],
+  required: ["quickOverview", "checklist", "explanation", "referencePoints", "disclaimer"],
   properties: {
-    summary: { type: "string" },
-    checkpoints: {
+    quickOverview: {
+      type: "object",
+      additionalProperties: false,
+      required: ["summary", "highlights"],
+      properties: {
+        summary: { type: "string" },
+        highlights: {
+          type: "array",
+          items: { type: "string" },
+          maxItems: 6
+        },
+        contextTags: {
+          type: "array",
+          items: { type: "string" },
+          maxItems: 6
+        }
+      }
+    },
+    checklist: {
       type: "array",
       items: { type: "string" },
       maxItems: 8
     },
-    patientExplanation: { type: "string" },
+    explanation: {
+      type: "object",
+      additionalProperties: false,
+      required: ["clinician", "patient"],
+      properties: {
+        clinician: { type: "string" },
+        patient: { type: "string" }
+      }
+    },
     referencePoints: {
       type: "array",
       items: { type: "string" },
@@ -35,17 +60,40 @@ const REPORT_SCHEMA = {
 };
 
 function buildLivePrompt(input) {
+  const analysisContext = input.analysisContext || {};
+  const reservation = analysisContext.latestAppointment || {};
   const noteBlock = input.chartNotes ? `カルテ要点:\n${sanitizeText(input.chartNotes)}` : "カルテ要点: 未入力";
   const requestBlock = input.patientRequest
     ? `患者要望:\n${sanitizeText(input.patientRequest)}`
     : "患者要望: 未入力";
+  const interview = input.patientInterview || {};
+  const interviewLines = [
+    interview.chiefComplaint && `主訴: ${sanitizeText(interview.chiefComplaint)}`,
+    interview.concernArea && `疾患部: ${sanitizeText(interview.concernArea)}`,
+    interview.symptoms && `症状: ${sanitizeText(interview.symptoms)}`,
+    interview.onset && `開始時期: ${sanitizeText(interview.onset)}`,
+    interview.aggravatingFactors && `増悪条件: ${sanitizeText(interview.aggravatingFactors)}`,
+    interview.relievingFactors && `軽減条件: ${sanitizeText(interview.relievingFactors)}`,
+    interview.priorTreatment && `既往治療: ${sanitizeText(interview.priorTreatment)}`,
+    interview.patientRequest && `要望: ${sanitizeText(interview.patientRequest)}`,
+    interview.notes && `補足: ${sanitizeText(interview.notes)}`,
+    analysisContext.chiefComplaint && `予約時主訴: ${sanitizeText(analysisContext.chiefComplaint)}`,
+    analysisContext.concernArea && `予約時疾患部: ${sanitizeText(analysisContext.concernArea)}`,
+    analysisContext.patientRequest && `予約時要望: ${sanitizeText(analysisContext.patientRequest)}`,
+    analysisContext.consultationNotes && `予約時相談メモ: ${sanitizeText(analysisContext.consultationNotes)}`,
+    reservation.chiefComplaint && `最新予約主訴: ${sanitizeText(reservation.chiefComplaint)}`,
+    reservation.concernArea && `最新予約疾患部: ${sanitizeText(reservation.concernArea)}`,
+    reservation.patientRequest && `最新予約要望: ${sanitizeText(reservation.patientRequest)}`,
+    reservation.consultationNotes && `最新予約相談メモ: ${sanitizeText(reservation.consultationNotes)}`
+  ].filter(Boolean);
+  const interviewBlock = interviewLines.length ? `ヒアリング:\n${interviewLines.join("\n")}` : "ヒアリング: 未入力";
 
   return [
     "あなたは歯科診療向けの診断補助AIです。",
     "必ず診断補助と情報整理に限定し、診断確定や治療方針の自動決定をしないでください。",
     "JSONのみを返してください。",
     "返却JSONの形式:",
-    '{ "summary": "string", "checkpoints": ["string"], "patientExplanation": "string", "referencePoints": ["string"], "disclaimer": ["string"] }',
+    '{ "quickOverview": { "summary": "string", "highlights": ["string"], "contextTags": ["string"] }, "checklist": ["string"], "explanation": { "clinician": "string", "patient": "string" }, "referencePoints": ["string"], "disclaimer": ["string"] }',
     "制約:",
     "- 画像のみ入力時は患者背景に依存する説明を断定しない",
     "- テキストのみ入力時は画像由来の所見や注目領域を断定しない",
@@ -53,6 +101,7 @@ function buildLivePrompt(input) {
     "",
     `患者ID: ${input.patientId ? "提供あり" : "未入力"}`,
     `症例ID: ${input.caseId ? "提供あり" : "未入力"}`,
+    interviewBlock,
     noteBlock,
     "",
     requestBlock
@@ -104,10 +153,24 @@ function normalizeLiveReport(report) {
     throw createValidationError("モデル応答が不正です。", 502);
   }
 
+  const quickOverview = report.quickOverview && typeof report.quickOverview === "object" ? report.quickOverview : {};
+  const checklist = Array.isArray(report.checklist) ? report.checklist.map(sanitizeText).filter(Boolean) : [];
+  const explanation = report.explanation && typeof report.explanation === "object" ? report.explanation : {};
+
   return {
-    summary: sanitizeText(report.summary),
-    checkpoints: Array.isArray(report.checkpoints) ? report.checkpoints.map(sanitizeText).filter(Boolean) : [],
-    patientExplanation: sanitizeText(report.patientExplanation),
+    quickOverview: {
+      summary: sanitizeText(quickOverview.summary || report.summary || ""),
+      highlights: Array.isArray(quickOverview.highlights) ? quickOverview.highlights.map(sanitizeText).filter(Boolean) : [],
+      contextTags: Array.isArray(quickOverview.contextTags) ? quickOverview.contextTags.map(sanitizeText).filter(Boolean) : []
+    },
+    checklist,
+    explanation: {
+      clinician: sanitizeText(explanation.clinician || ""),
+      patient: sanitizeText(explanation.patient || report.patientExplanation || "")
+    },
+    summary: sanitizeText(quickOverview.summary || report.summary || ""),
+    checkpoints: checklist,
+    patientExplanation: sanitizeText(explanation.patient || report.patientExplanation || ""),
     referencePoints: Array.isArray(report.referencePoints) ? report.referencePoints.map(sanitizeText).filter(Boolean) : [],
     disclaimer: Array.isArray(report.disclaimer)
       ? report.disclaimer.map(sanitizeText).filter(Boolean)

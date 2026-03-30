@@ -81,6 +81,11 @@ test("creates appointment from reservation form input", async () => {
         preferredTime: "10:30",
         visitType: "初診",
         reason: "一般歯科 / 左下がしみる",
+        chiefComplaint: "左下臼歯の冷水痛",
+        concernArea: "左下臼歯部",
+        symptoms: "冷たいものがしみる",
+        patientRequest: "原因を知って安心したい",
+        consultationNotes: "2週間前から違和感あり",
         notes: "2週間前から違和感あり",
         firstVisit: true
       })
@@ -91,6 +96,10 @@ test("creates appointment from reservation form input", async () => {
     assert.equal(data.ok, true);
     assert.equal(data.appointment.patientName, "青木 さやか");
     assert.equal(data.patient.name, "青木 さやか");
+    assert.equal(data.appointment.chiefComplaint, "左下臼歯の冷水痛");
+    assert.equal(data.appointment.concernArea, "左下臼歯部");
+    assert.equal(data.appointment.patientInterview.chiefComplaint, "左下臼歯の冷水痛");
+    assert.equal(data.appointment.patientInterview.concernArea, "左下臼歯部");
   } finally {
     await app.close();
   }
@@ -107,6 +116,12 @@ test("returns patient detail with reports and xray metadata", async () => {
     assert.equal(data.patient.id, "p-001");
     assert.ok(Array.isArray(data.reports));
     assert.ok(Array.isArray(data.xrayStudies));
+    assert.ok(data.caseContext);
+    assert.equal(data.caseContext.chiefComplaint, "右上の歯がしみる");
+    assert.equal(data.caseContext.concernArea, "右上臼歯部");
+    assert.match(data.caseContext.summary, /右上臼歯部/);
+    assert.equal(data.caseContext.patientInterview.chiefComplaint, "右上の歯がしみる");
+    assert.equal(data.caseContext.patientInterview.concernArea, "右上臼歯部");
   } finally {
     await app.close();
   }
@@ -148,13 +163,13 @@ test("uploads xray image and creates analysis report", async () => {
         mode: "fallback",
         bodyPart: "右上臼歯部",
         view: "デンタル",
-        notes: "冷水痛と咬合時違和感がある。",
+        notes: "レントゲンだけで解析したい。",
         image: {
           name: "xray.png",
           type: "image/png",
           size: 70,
           dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO2X9YQAAAAASUVORK5CYII="
-        }
+        },
       })
     });
     const data = await response.json();
@@ -163,6 +178,16 @@ test("uploads xray image and creates analysis report", async () => {
     assert.equal(data.ok, true);
     assert.equal(data.xrayStudy.bodyPart, "右上臼歯部");
     assert.equal(data.report.xrayStudyId, data.xrayStudy.id);
+    assert.equal(data.xrayStudy.meta.chiefComplaint, "右上の歯がしみる");
+    assert.equal(data.xrayStudy.meta.concernArea, "右上臼歯部");
+    assert.equal(data.xrayStudy.meta.analysisContext.chiefComplaint, "右上の歯がしみる");
+    assert.equal(data.xrayStudy.meta.previewUrl.startsWith("data:image/png;base64,"), true);
+    assert.equal(data.report.patientInterview.chiefComplaint, "右上の歯がしみる");
+    assert.equal(data.report.patientInterview.concernArea, "右上臼歯部");
+    assert.equal(data.report.analysisContext.chiefComplaint, "右上の歯がしみる");
+    assert.equal(data.report.sections.quickOverview.highlights[0], "右上の歯がしみる");
+    assert.ok(Array.isArray(data.report.sections.checklist));
+    assert.equal(data.patientDetail.caseContext.chiefComplaint, "右上の歯がしみる");
     assert.equal(data.patientDetail.patient.id, "p-001");
     assert.equal(data.patientDetail.reports[0].xrayStudyId, data.xrayStudy.id);
     assert.equal(data.patientDetail.xrayStudies[0].id, data.xrayStudy.id);

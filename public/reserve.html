@@ -6,15 +6,16 @@
     <title>予約フォーム | Dental Clinic PoC</title>
     <meta name="description" content="歯科医院の患者向け予約フォーム" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/reserve-page.css" />
   </head>
   <body class="page page-reserve">
     <div class="page-shell">
       <header class="marketing-header">
         <a class="brand" href="/">
-          <span class="brand-mark">DC</span>
+          <span class="brand-mark">AO</span>
           <span>
-            <strong>Dental Clinic PoC</strong>
-            <small>患者向け予約導線</small>
+            <strong id="clinicName">あおば歯科クリニック</strong>
+            <small id="clinicSubline">患者向け予約導線</small>
           </span>
         </a>
         <nav class="header-nav" aria-label="主な画面">
@@ -25,14 +26,33 @@
       </header>
 
       <main class="reserve-main">
-        <section class="hero-panel">
-          <div class="section-label">患者の予約フォーム</div>
-          <h1>来院予約の入力</h1>
-          <p class="lead">
-            初診・再診、希望日時、症状を入力して送信します。送信後は同じ画面で受付結果を確認できます。
-          </p>
-          <div class="mini-panel" id="reserveStatusCard"></div>
-          <ul class="bullet-list" id="reservationHints"></ul>
+        <section class="hero-panel reserve-hero">
+          <div class="hero-copy">
+            <div class="section-label">患者の予約フォーム</div>
+            <h1>来院予約の入力</h1>
+            <p class="lead">
+              空き枠を先に確認して、選んだ時間をそのまま予約できます。1診療60分の予約枠で整理しています。
+            </p>
+            <div class="reserve-badges">
+              <span class="reserve-chip">1診療60分</span>
+              <span class="reserve-chip">空き枠から選択</span>
+              <span class="reserve-chip">WEB送信で完了</span>
+            </div>
+          </div>
+          <aside class="hero-side-card reserve-policy-card" id="reservePolicyCard"></aside>
+        </section>
+
+        <section class="panel availability-panel">
+          <div class="panel-head">
+            <div>
+              <div class="section-label">空き枠</div>
+              <h2>予約できる時間を選ぶ</h2>
+            </div>
+            <div class="availability-meta" id="availabilityMeta"></div>
+          </div>
+          <div class="reserve-day-strip" id="dayTabs"></div>
+          <div class="reserve-slot-grid" id="slotGrid"></div>
+          <div class="reserve-slot-footer" id="selectedSlotSummary"></div>
         </section>
 
         <section class="panel form-panel">
@@ -42,7 +62,9 @@
               <h2>予約情報</h2>
             </div>
           </div>
-          <form id="appointmentForm" class="form-grid">
+          <form id="appointmentForm" class="form-grid reserve-form">
+            <input type="hidden" name="date" />
+            <input type="hidden" name="time" />
             <div class="two-column">
               <label>
                 <span>氏名</span>
@@ -70,14 +92,19 @@
 
             <div class="two-column">
               <label>
-                <span>希望日</span>
-                <input name="date" type="date" required />
+                <span>主訴</span>
+                <input name="chiefComplaint" type="text" placeholder="例: 右上の奥歯がしみる" required />
               </label>
               <label>
-                <span>希望時間</span>
-                <select name="time" required></select>
+                <span>気になる部位</span>
+                <input name="concernArea" type="text" placeholder="例: 右上臼歯部 / 親知らず周囲" required />
               </label>
             </div>
+
+            <label>
+              <span>今回の希望</span>
+              <input name="patientRequest" type="text" placeholder="例: 痛みの原因を知りたい / 必要な処置を知りたい" />
+            </label>
 
             <label>
               <span>症状・相談内容</span>
@@ -85,27 +112,18 @@
             </label>
 
             <div class="button-row">
-              <button class="primary-button" type="submit">予約を送信</button>
-              <button class="secondary-button" id="resetAppointmentForm" type="button">入力をクリア</button>
+              <button class="primary-button" type="submit">選択した空き枠で予約を送信</button>
+              <button class="secondary-button" id="resetAppointmentForm" type="button">選択をやり直す</button>
+            </div>
+
+            <div class="message info" id="appointmentFeedback">
+              空き枠を選んで送信すると、この場で予約結果を確認できます。
+            </div>
+            <div class="info-grid" id="appointmentSummary"></div>
+            <div class="button-row">
+              <a class="secondary-button" href="/">医院サイトへ戻る</a>
             </div>
           </form>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div>
-              <div class="section-label">送信結果</div>
-              <h2>受付状況</h2>
-            </div>
-          </div>
-          <div class="message info" id="appointmentFeedback">
-            予約を送信すると、この欄に受付結果が表示されます。
-          </div>
-          <div class="info-grid" id="appointmentSummary"></div>
-          <div class="button-row">
-            <a class="secondary-button" href="/">医院サイトへ戻る</a>
-            <a class="primary-button" href="/dashboard">予約一覧を見る</a>
-          </div>
         </section>
       </main>
     </div>

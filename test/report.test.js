@@ -24,7 +24,7 @@ test("fallback report avoids image-derived claims for text-only input", () => {
 
   assert.equal(report.meta.modeUsed, "fallback");
   assert.equal(report.meta.constraintFlags.avoidImageDerivedSuggestions, true);
-  assert.match(report.sections.summary, /画像情報がないため|画像由来/);
+  assert.match(report.sections.quickOverview.summary, /テキスト入力から/);
   assert.ok(report.sections.referencePoints.some((item) => item.includes("画像由来")));
 });
 
@@ -44,8 +44,8 @@ test("fallback report avoids background assumptions for image-only input", () =>
   });
 
   assert.equal(report.meta.constraintFlags.avoidBackgroundClaims, true);
-  assert.match(report.sections.summary, /画像のみ/);
-  assert.match(report.sections.patientExplanation, /断定せず|最終判断/);
+  assert.match(report.sections.quickOverview.summary, /画像のみ/);
+  assert.match(report.sections.explanation.patient, /断定しません|最終判断/);
 });
 
 test("mock mode stays on mock path", () => {
@@ -60,6 +60,8 @@ test("mock mode stays on mock path", () => {
 
   assert.equal(report.meta.modeUsed, "mock");
   assert.equal(report.meta.generator, "mock-template-v1");
+  assert.ok(Array.isArray(report.sections.checklist));
+  assert.ok(report.sections.quickOverview);
 });
 
 test("live mode falls back when API key is not configured", async () => {
