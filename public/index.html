@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>医院紹介 | Dental Clinic PoC</title>
+    <meta name="description" content="駅近・通いやすさ・症状別導線を重視した歯科医院の紹介ランディングページ" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page page-home">
+    <div class="page-shell">
+      <header class="marketing-header">
+        <a class="brand" href="/">
+          <span class="brand-mark">DC</span>
+          <span>
+            <strong>Dental Clinic PoC</strong>
+            <small>医院サイト</small>
+          </span>
+        </a>
+        <nav class="header-nav" aria-label="主な画面">
+          <a href="/" aria-current="page">医院サイト</a>
+          <a href="/reserve">予約フォーム</a>
+          <a href="/dashboard">管理画面</a>
+        </nav>
+        <div class="header-actions">
+          <a class="secondary-button" href="/dashboard">管理画面へ</a>
+          <a class="primary-button" href="/reserve">WEB予約</a>
+        </div>
+      </header>
+
+      <main class="marketing-main">
+        <section class="hero-panel hero-panel-home">
+          <div class="hero-copy">
+            <div class="section-label">駅近 / 通いやすさを重視</div>
+            <h1 id="heroTitle">やさしく予約できる歯科医院サイト</h1>
+            <p class="lead" id="heroLead"></p>
+            <div class="hero-badges" id="heroBadges"></div>
+            <div class="button-row">
+              <a class="primary-button" href="/reserve">WEB予約へ進む</a>
+              <a class="secondary-button" href="/dashboard">院内管理画面を見る</a>
+            </div>
+            <div class="chip-row" id="clinicMeta"></div>
+          </div>
+          <div class="hero-visual-shell" data-reveal>
+            <div class="hero-main-visual">
+              <img src="/assets/hero-dental-team.png" alt="歯科医院での診療イメージ" />
+              <div class="hero-photo-caption">
+                <strong>相談のしやすさと落ち着いた説明</strong>
+                <p>院内の空気感が伝わる、余白のあるファーストビュー。</p>
+              </div>
+            </div>
+            <article class="hero-side-card" id="accessSummary"></article>
+          </div>
+        </section>
+
+        <section class="panel section-panel">
+          <div class="panel-head">
+            <div>
+              <div class="section-label">症状から探す</div>
+              <h2>こんな悩みはありませんか</h2>
+            </div>
+            <a class="secondary-button" href="/reserve">症状を相談して予約</a>
+          </div>
+          <div class="card-grid symptom-grid" id="symptomGrid"></div>
+        </section>
+
+        <section class="panel section-panel">
+          <div class="panel-head">
+            <div>
+              <div class="section-label">おすすめ診療</div>
+              <h2>当院のイチオシ</h2>
+            </div>
+          </div>
+          <div class="card-grid service-grid" id="serviceGrid"></div>
+        </section>
+
+        <section class="content-grid content-grid-tight">
+          <article class="panel section-panel">
+            <div class="panel-head">
+              <div>
+                <div class="section-label">医院の特徴</div>
+                <h2>通いやすさと説明のわかりやすさ</h2>
+              </div>
+            </div>
+            <div class="card-grid feature-grid" id="landingHighlights"></div>
+          </article>
+
+          <article class="panel section-panel gallery-panel" data-reveal>
+            <div class="panel-head">
+              <div>
+                <div class="section-label">院内イメージ</div>
+                <h2>空気感が伝わる写真</h2>
+              </div>
+            </div>
+            <div class="gallery-grid" id="galleryGrid"></div>
+          </article>
+        </section>
+
+        <section class="panel section-panel">
+          <div class="panel-head">
+            <div>
+              <div class="section-label">よくある質問</div>
+              <h2>予約前の確認事項</h2>
+            </div>
+          </div>
+          <div class="card-grid faq-grid" id="faqGrid"></div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/home.js"></script>
+  </body>
+</html>

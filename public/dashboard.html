@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>予約一覧 | Dental Clinic PoC</title>
+    <meta name="description" content="歯科医院の管理画面 予約一覧" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="page page-dashboard">
+    <div class="page-shell">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-mark">DC</span>
+          <span>
+            <strong>Dental Clinic PoC</strong>
+            <small>医院管理画面</small>
+          </span>
+        </div>
+        <nav class="header-nav" aria-label="主な画面">
+          <a href="/">医院サイト</a>
+          <a href="/reserve">予約フォーム</a>
+          <a href="/dashboard" aria-current="page">予約一覧</a>
+        </nav>
+        <button class="secondary-button" id="reloadBootstrap" type="button">データ再読込</button>
+      </header>
+
+      <main class="dashboard-main">
+        <section class="page-summary">
+          <div>
+            <div class="section-label dark">医院の管理画面</div>
+            <h1>予約一覧</h1>
+            <p class="lead">予約一覧を起点に、患者詳細と新規登録へ進むための院内UIです。</p>
+          </div>
+        </section>
+
+        <section class="stat-grid" id="dashboardStats"></section>
+
+        <section class="dashboard-grid">
+          <article class="panel dark-panel">
+            <div class="panel-head">
+              <div>
+                <div class="section-label dark">予約一覧</div>
+                <h2>来院予定の患者</h2>
+              </div>
+            </div>
+            <div class="stack-grid" id="appointmentList"></div>
+          </article>
+
+          <aside class="panel dark-panel">
+            <div class="panel-head">
+              <div>
+                <div class="section-label dark">新規患者登録</div>
+                <h2>患者を追加する</h2>
+              </div>
+            </div>
+            <form id="patientForm" class="form-grid">
+              <label>
+                <span>氏名</span>
+                <input name="name" type="text" placeholder="例: 佐藤 結衣" required />
+              </label>
+              <label>
+                <span>ふりがな</span>
+                <input name="kana" type="text" placeholder="さとう ゆい" />
+              </label>
+              <div class="two-column">
+                <label>
+                  <span>電話番号</span>
+                  <input name="phone" type="tel" placeholder="080-1234-5678" />
+                </label>
+                <label>
+                  <span>性別</span>
+                  <select name="gender">
+                    <option value="">未選択</option>
+                    <option value="女性">女性</option>
+                    <option value="男性">男性</option>
+                    <option value="その他">その他</option>
+                  </select>
+                </label>
+              </div>
+              <label>
+                <span>生年月日</span>
+                <input name="birthDate" type="date" />
+              </label>
+              <label>
+                <span>主訴・メモ</span>
+                <textarea name="note" rows="4" placeholder="例: 定期検診を希望。前回の詰め物の状態も確認したい。"></textarea>
+              </label>
+              <button class="primary-button" type="submit">患者を登録</button>
+            </form>
+            <div id="patientRegisterFeedback" class="message info">登録した患者は患者詳細へ移動できます。</div>
+          </aside>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/dashboard.js"></script>
+  </body>
+</html>

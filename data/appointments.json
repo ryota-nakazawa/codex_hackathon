@@ -1,0 +1,67 @@
+[
+  {
+    "id": "apt-104",
+    "date": "2026-03-30",
+    "time": "17:30",
+    "status": "confirmed",
+    "type": "再診",
+    "patientId": "p-001",
+    "patientName": "田中 みどり",
+    "doctor": "高橋",
+    "reason": "右上臼歯の冷水痛",
+    "channel": "web",
+    "memo": "仕事後に来院希望。説明は図解を併用。"
+  },
+  {
+    "id": "apt-105",
+    "date": "2026-04-01",
+    "time": "10:00",
+    "status": "tentative",
+    "type": "初診",
+    "patientId": "p-002",
+    "patientName": "佐藤 翔太",
+    "doctor": "佐々木",
+    "reason": "親知らずの腫れ",
+    "channel": "web",
+    "memo": "週末に再診候補を案内したい。"
+  },
+  {
+    "id": "apt-108",
+    "date": "2026-04-03",
+    "time": "14:00",
+    "status": "confirmed",
+    "type": "再診",
+    "patientId": "p-003",
+    "patientName": "鈴木 花音",
+    "doctor": "高橋",
+    "reason": "前歯の見た目相談",
+    "channel": "phone",
+    "memo": "審美相談。参考写真の持参を案内。"
+  },
+  {
+    "id": "apt-109",
+    "date": "2026-04-05",
+    "time": "09:30",
+    "status": "confirmed",
+    "type": "定期検診",
+    "patientId": "p-004",
+    "patientName": "山本 亮介",
+    "doctor": "佐々木",
+    "reason": "歯周検診",
+    "channel": "web",
+    "memo": "午前希望。要点を短く伝える。"
+  },
+  {
+    "id": "apt-110",
+    "date": "2026-04-06",
+    "time": "11:15",
+    "status": "new",
+    "type": "初診",
+    "patientId": "p-005",
+    "patientName": "高橋 ひかる",
+    "doctor": "未定",
+    "reason": "健診とクリーニング",
+    "channel": "web",
+    "memo": "初診。問診票は事前送付済み。"
+  }
+]

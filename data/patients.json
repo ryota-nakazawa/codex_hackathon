@@ -1,0 +1,67 @@
+[
+  {
+    "id": "p-001",
+    "patientNumber": "A-0248",
+    "name": "田中 みどり",
+    "kana": "タナカ ミドリ",
+    "birthYear": 1986,
+    "sex": "女性",
+    "phone": "090-1111-2233",
+    "status": "通院中",
+    "mainConcern": "右上臼歯の冷水痛",
+    "lastVisit": "2026-03-18",
+    "nextAppointmentId": "apt-104"
+  },
+  {
+    "id": "p-002",
+    "patientNumber": "A-0271",
+    "name": "佐藤 翔太",
+    "kana": "サトウ ショウタ",
+    "birthYear": 1991,
+    "sex": "男性",
+    "phone": "070-2222-7788",
+    "status": "経過観察",
+    "mainConcern": "親知らずの腫れ",
+    "lastVisit": "2026-03-12",
+    "nextAppointmentId": "apt-105"
+  },
+  {
+    "id": "p-003",
+    "patientNumber": "A-0304",
+    "name": "鈴木 花音",
+    "kana": "スズキ カノン",
+    "birthYear": 1978,
+    "sex": "女性",
+    "phone": "080-3333-4400",
+    "status": "再治療相談",
+    "mainConcern": "前歯の見た目と被せ物の色",
+    "lastVisit": "2026-02-27",
+    "nextAppointmentId": "apt-108"
+  },
+  {
+    "id": "p-004",
+    "patientNumber": "A-0317",
+    "name": "山本 亮介",
+    "kana": "ヤマモト リョウスケ",
+    "birthYear": 1983,
+    "sex": "男性",
+    "phone": "090-4444-5532",
+    "status": "定期管理",
+    "mainConcern": "歯周検診",
+    "lastVisit": "2026-03-22",
+    "nextAppointmentId": "apt-109"
+  },
+  {
+    "id": "p-005",
+    "patientNumber": "A-0332",
+    "name": "高橋 ひかる",
+    "kana": "タカハシ ヒカル",
+    "birthYear": 1996,
+    "sex": "女性",
+    "phone": "080-5555-6622",
+    "status": "新規予約",
+    "mainConcern": "健診とクリーニング",
+    "lastVisit": null,
+    "nextAppointmentId": "apt-110"
+  }
+]

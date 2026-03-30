@@ -1,0 +1,369 @@
+{
+  "clinic": {
+    "id": "clinic-aoba-01",
+    "name": "あおば歯科クリニック",
+    "tagline": "やさしく、わかりやすく、続けやすい歯科診療",
+    "phone": "03-5555-1846",
+    "address": "東京都港区芝浦2-4-8",
+    "hours": {
+      "weekday": "09:30-13:00 / 14:30-18:30",
+      "saturday": "09:30-13:00 / 14:00-16:30",
+      "closed": ["日曜", "祝日"]
+    },
+    "services": [
+      "一般歯科",
+      "予防歯科",
+      "小児歯科",
+      "審美歯科",
+      "インプラント相談"
+    ],
+    "reservation": {
+      "leadTimeDays": 1,
+      "channels": ["web", "電話"],
+      "formHints": [
+        "初診/再診を選択",
+        "症状の主訴を簡潔に記入",
+        "希望日時は第3希望まで入力"
+      ]
+    }
+  },
+  "ui": {
+    "themes": {
+      "patientSite": "soft-blue",
+      "dashboard": "clinic-blue"
+    },
+    "routes": [
+      "/",
+      "/reserve",
+      "/reserve/complete",
+      "/dashboard",
+      "/dashboard/patients/:id",
+      "/dashboard/patients/new"
+    ]
+  },
+  "patients": [
+    {
+      "id": "p-001",
+      "patientNumber": "A-0248",
+      "name": "田中 みどり",
+      "kana": "タナカ ミドリ",
+      "birthYear": 1986,
+      "sex": "女性",
+      "phone": "090-1111-2233",
+      "firstVisit": "2023-08-17",
+      "lastVisit": "2026-03-18",
+      "status": "通院中",
+      "mainConcern": "右上臼歯の冷水痛",
+      "allergies": ["ペニシリン"],
+      "notes": "説明は図を交えると理解しやすい。仕事の都合で夕方以降を希望。",
+      "nextAppointmentId": "apt-104",
+      "lastReportSummary": "右上臼歯部の冷水痛と咬合時違和感があり、う蝕または修復物関連の再評価が必要。",
+      "history": [
+        {
+          "visitId": "v-2201",
+          "date": "2025-11-21",
+          "type": "定期検診",
+          "doctor": "高橋",
+          "summary": "歯周状態は安定。上顎右側臼歯に軽度の染色を確認し経過観察。",
+          "prescriptions": []
+        },
+        {
+          "visitId": "v-2334",
+          "date": "2026-01-14",
+          "type": "応急処置",
+          "doctor": "高橋",
+          "summary": "冷水痛に対して咬合調整と生活指導を実施。",
+          "prescriptions": ["鎮痛薬の頓用説明"]
+        }
+      ]
+    },
+    {
+      "id": "p-002",
+      "patientNumber": "A-0271",
+      "name": "佐藤 翔太",
+      "kana": "サトウ ショウタ",
+      "birthYear": 1991,
+      "sex": "男性",
+      "phone": "070-2222-7788",
+      "firstVisit": "2024-02-03",
+      "lastVisit": "2026-03-12",
+      "status": "経過観察",
+      "mainConcern": "親知らずの腫れ",
+      "allergies": [],
+      "notes": "週末に通院したい。腫れが出た時の再診導線を案内すると安心する。",
+      "nextAppointmentId": "apt-105",
+      "lastReportSummary": "下顎左側智歯周囲の腫脹傾向があり、清掃状況と周囲炎の再確認が必要。",
+      "history": [
+        {
+          "visitId": "v-2244",
+          "date": "2025-09-10",
+          "type": "抜歯相談",
+          "doctor": "高橋",
+          "summary": "智歯周囲の炎症既往あり。抜歯時期は仕事の繁忙を見て再検討。",
+          "prescriptions": ["洗口液"]
+        },
+        {
+          "visitId": "v-2390",
+          "date": "2026-03-12",
+          "type": "経過確認",
+          "doctor": "高橋",
+          "summary": "一時的な疼痛は軽減。清掃指導を継続。",
+          "prescriptions": []
+        }
+      ]
+    },
+    {
+      "id": "p-003",
+      "patientNumber": "A-0304",
+      "name": "鈴木 花音",
+      "kana": "スズキ カノン",
+      "birthYear": 1978,
+      "sex": "女性",
+      "phone": "080-3333-4400",
+      "firstVisit": "2022-05-11",
+      "lastVisit": "2026-02-27",
+      "status": "再治療相談",
+      "mainConcern": "前歯の見た目と被せ物の色",
+      "allergies": ["ラテックス"],
+      "notes": "審美面の相談では完成イメージが欲しい。写真や参考資料があると進めやすい。",
+      "nextAppointmentId": "apt-108",
+      "lastReportSummary": "前歯補綴の色調差と適合確認が必要で、審美面の再評価を優先。",
+      "history": [
+        {
+          "visitId": "v-2112",
+          "date": "2024-10-22",
+          "type": "補綴調整",
+          "doctor": "佐々木",
+          "summary": "前歯部の色調確認と微調整を実施。",
+          "prescriptions": []
+        },
+        {
+          "visitId": "v-2381",
+          "date": "2026-02-27",
+          "type": "審美相談",
+          "doctor": "高橋",
+          "summary": "前歯の色と形態に関する説明。仮診断段階で資料写真を確認。",
+          "prescriptions": []
+        }
+      ]
+    },
+    {
+      "id": "p-004",
+      "patientNumber": "A-0317",
+      "name": "山本 亮介",
+      "kana": "ヤマモト リョウスケ",
+      "birthYear": 1983,
+      "sex": "男性",
+      "phone": "090-4444-5532",
+      "firstVisit": "2021-11-09",
+      "lastVisit": "2026-03-22",
+      "status": "定期管理",
+      "mainConcern": "歯周検診",
+      "allergies": [],
+      "notes": "会社員。午前の予約が取りやすい。説明は短く要点を先に伝えるとよい。",
+      "nextAppointmentId": "apt-109",
+      "lastReportSummary": "歯周ポケットは軽度だが、清掃不良部位の改善と定期管理継続が推奨。",
+      "history": [
+        {
+          "visitId": "v-2188",
+          "date": "2025-12-19",
+          "type": "歯周検診",
+          "doctor": "佐々木",
+          "summary": "歯周組織は安定。ブラッシング指導を更新。",
+          "prescriptions": []
+        },
+        {
+          "visitId": "v-2402",
+          "date": "2026-03-22",
+          "type": "定期検診",
+          "doctor": "高橋",
+          "summary": "右下臼歯部に清掃不良を確認し、次回で再評価予定。",
+          "prescriptions": []
+        }
+      ]
+    }
+  ],
+  "appointments": [
+    {
+      "id": "apt-104",
+      "date": "2026-03-30",
+      "time": "17:30",
+      "status": "confirmed",
+      "type": "再診",
+      "patientId": "p-001",
+      "patientName": "田中 みどり",
+      "doctor": "高橋",
+      "reason": "右上臼歯の冷水痛",
+      "channel": "web",
+      "memo": "仕事後に来院希望。説明は図解を併用。"
+    },
+    {
+      "id": "apt-105",
+      "date": "2026-04-01",
+      "time": "10:00",
+      "status": "tentative",
+      "type": "初診",
+      "patientId": "p-002",
+      "patientName": "佐藤 翔太",
+      "doctor": "佐々木",
+      "reason": "親知らずの腫れ",
+      "channel": "web",
+      "memo": "週末に再診候補を案内したい。"
+    },
+    {
+      "id": "apt-108",
+      "date": "2026-04-03",
+      "time": "14:00",
+      "status": "confirmed",
+      "type": "再診",
+      "patientId": "p-003",
+      "patientName": "鈴木 花音",
+      "doctor": "高橋",
+      "reason": "前歯の見た目相談",
+      "channel": "phone",
+      "memo": "審美相談。参考写真の持参を案内。"
+    },
+    {
+      "id": "apt-109",
+      "date": "2026-04-05",
+      "time": "09:30",
+      "status": "confirmed",
+      "type": "定期検診",
+      "patientId": "p-004",
+      "patientName": "山本 亮介",
+      "doctor": "佐々木",
+      "reason": "歯周検診",
+      "channel": "web",
+      "memo": "午前希望。要点を短く伝える。"
+    }
+  ],
+  "xrayImages": [
+    {
+      "id": "xr-001",
+      "patientId": "p-001",
+      "visitId": "v-2334",
+      "takenAt": "2026-03-18T15:20:00+09:00",
+      "fileName": "p001_20260318_panorama.png",
+      "mimeType": "image/png",
+      "bodyPart": "上顎右側臼歯",
+      "view": "パノラマ",
+      "storageHint": "/samples/xray/p001-20260318-panorama.png",
+      "meta": {
+        "width": 1600,
+        "height": 900,
+        "pixelSpacing": "0.2mm"
+      },
+      "reportSummary": "上顎右側臼歯部の確認を要する。修復物周囲の再評価が必要。",
+      "findingHints": [
+        "右上臼歯の補綴境界を確認",
+        "骨レベルの経過確認",
+        "咬合時痛と整合する部位を再確認"
+      ]
+    },
+    {
+      "id": "xr-002",
+      "patientId": "p-002",
+      "visitId": "v-2390",
+      "takenAt": "2026-03-12T11:05:00+09:00",
+      "fileName": "p002_20260312_periapical.png",
+      "mimeType": "image/png",
+      "bodyPart": "下顎左側智歯周囲",
+      "view": "デンタル",
+      "storageHint": "/samples/xray/p002-20260312-dental.png",
+      "meta": {
+        "width": 1200,
+        "height": 800,
+        "pixelSpacing": "0.15mm"
+      },
+      "reportSummary": "下顎左側智歯周囲の炎症確認を優先。",
+      "findingHints": [
+        "周囲炎の有無",
+        "清掃不良部位の確認",
+        "術前説明用の可視化"
+      ]
+    },
+    {
+      "id": "xr-003",
+      "patientId": "p-003",
+      "visitId": "v-2381",
+      "takenAt": "2026-02-27T09:40:00+09:00",
+      "fileName": "p003_20260227_front.png",
+      "mimeType": "image/jpeg",
+      "bodyPart": "前歯部",
+      "view": "口内写真",
+      "storageHint": "/samples/xray/p003-20260227-front.jpg",
+      "meta": {
+        "width": 1400,
+        "height": 1050,
+        "pixelSpacing": "N/A"
+      },
+      "reportSummary": "前歯部の審美相談用画像。色調と形態の比較に利用。",
+      "findingHints": [
+        "色調差の比較",
+        "辺縁の見え方の確認",
+        "説明用の参考資料として利用"
+      ]
+    }
+  ],
+  "reports": [
+    {
+      "id": "rep-001",
+      "patientId": "p-001",
+      "visitId": "v-2334",
+      "createdAt": "2026-03-18T15:40:00+09:00",
+      "summary": "右上臼歯の冷水痛と咬合時違和感があり、修復物周囲の再評価を優先。患者には画像と症状を分けて説明する。",
+      "checkpoints": [
+        "患者要望が痛みの軽減を優先しているか確認する",
+        "補綴境界と二次う蝕の可能性を再確認する",
+        "必要なら追加撮影や口腔内所見で裏取りする"
+      ],
+      "patientExplanation": "右上の歯について、画像で気になる場所と症状の出方を一緒に確認しながら説明する。今の段階では原因を断定せず、先生が診察で最終判断する。",
+      "referencePoints": [
+        "診断補助として扱う",
+        "画像所見と問診を混同しない",
+        "説明は図解に接続しやすい短文で作る"
+      ]
+    },
+    {
+      "id": "rep-002",
+      "patientId": "p-002",
+      "visitId": "v-2390",
+      "createdAt": "2026-03-12T11:20:00+09:00",
+      "summary": "下顎左側智歯周囲の腫れに対して、炎症の範囲と清掃状況の確認を優先。抜歯相談の前提整理として有用。",
+      "checkpoints": [
+        "腫れの頻度と増悪条件を確認する",
+        "智歯周囲炎の再燃パターンを整理する",
+        "患者の通院可能日を確認する"
+      ],
+      "patientExplanation": "親知らずまわりの腫れについて、今ある情報を整理して説明する。必要な処置やタイミングは診察で決める。",
+      "referencePoints": [
+        "清掃指導の継続",
+        "急性症状の再発確認",
+        "仕事の都合を踏まえた通院調整"
+      ]
+    }
+  ],
+  "clinicSite": {
+    "hero": {
+      "title": "家族で通いやすい、やさしい歯科医院",
+      "lead": "予約しやすく、説明がわかりやすい。はじめての方も安心してご相談いただけます。",
+      "cta": [
+        {
+          "label": "WEB予約",
+          "href": "/reserve"
+        },
+        {
+          "label": "診療時間を見る",
+          "href": "#hours"
+        }
+      ]
+    },
+    "sections": [
+      "診療案内",
+      "医院紹介",
+      "設備紹介",
+      "アクセス",
+      "WEB予約"
+    ]
+  }
+}
