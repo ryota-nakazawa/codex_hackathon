@@ -7,7 +7,6 @@ const IDENTIFIER_PATTERN = /^[A-Za-z0-9_-]+$/;
 function sanitizeText(value) {
   return String(value || "")
     .replace(SAFE_TEXT_PATTERN, " ")
-    .replace(TAG_PATTERN, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
