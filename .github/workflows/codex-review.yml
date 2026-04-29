@@ -50,41 +50,45 @@ jobs:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           allow-users: ryota-nakazawa
           prompt: |
-            This is PR #${{ github.event.pull_request.number }} for ${{ github.repository }}.
+            これは ${{ github.repository }} の PR #${{ github.event.pull_request.number }} です。
 
-            Review ONLY the changes introduced by the PR:
+            PRで入った変更だけをレビューしてください:
             - Base SHA: ${{ github.event.pull_request.base.sha }}
             - Head SHA: ${{ github.event.pull_request.head.sha }}
 
-            Use these commands as context if helpful:
+            必要なら次のコマンドを使って差分とテストを確認してください:
             - git diff --stat ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}
             - git diff ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}
             - npm test
 
-            Goal:
-            - Find bugs, behavioral regressions, security risks, and missing tests.
-            - Prefer concrete findings over general advice.
+            目的:
+            - バグ、振る舞いの退行、セキュリティリスク、テスト不足を見つける。
+            - 一般論ではなく、このPRの差分に基づく具体的な指摘を優先する。
 
-            Repository context:
-            - Node.js app using only built-in Node modules.
-            - Main test command: npm test
-            - Public UI lives under public/
-            - Server/API code lives under server/
-            - Test files live under test/
+            リポジトリ情報:
+            - Node.js標準モジュールだけで動くアプリ。
+            - 主なテストコマンド: npm test
+            - 画面コード: public/
+            - サーバー/APIコード: server/
+            - テスト: test/
 
-            Rules:
-            - Do not install dependencies.
-            - Do not modify files.
-            - Keep the review concise and actionable.
-            - If you find no issues, say that clearly and mention any residual test risk.
+            ルール:
+            - 依存関係をインストールしない。
+            - ファイルを変更しない。
+            - レビュー結果、見出し、本文は日本語で書く。
+            - 簡潔で、次に取るべき対応が分かるレビューにする。
+            - 問題がない場合は明確に「重大な問題は見つかりません」と書き、残るテストリスクだけを短く述べる。
 
-            Output:
-            - Start with a short verdict.
-            - Then list findings ordered by severity.
-            - Include file paths and line references when possible.
+            出力形式:
+            - 先頭行に必ず `ISSUE_NEEDED: yes` または `ISSUE_NEEDED: no` を書く。
+            - 対応が必要な具体的な問題が1つ以上ある場合だけ `ISSUE_NEEDED: yes` にする。
+            - 2行目に `ISSUE_TITLE: ...` を書く。Issue不要なら `ISSUE_TITLE: none` にする。
+            - その後に短い判定を書く。
+            - 指摘がある場合は重要度順に並べ、可能な限りファイルパスと行番号を含める。
+            - Issue化されても意味が通じるように、原因、影響、推奨対応を書く。
 
   post-feedback:
-    name: Post Codex review comment
+    name: Post Codex review feedback
     runs-on: ubuntu-latest
     needs: codex-review
     if: always() && needs.codex-review.result != 'cancelled'
@@ -104,16 +108,16 @@ jobs:
           script: |
             const finalMessage = process.env.CODEX_FINAL_MESSAGE;
             const body = finalMessage && finalMessage.trim()
-              ? `## Codex review\n\n${finalMessage}`
+              ? `## Codexレビュー\n\n${finalMessage}`
               : [
-                  '## Codex review',
+                  '## Codexレビュー',
                   '',
-                  'Codex Action did not return a review message.',
+                  'Codex Action からレビュー結果が返りませんでした。',
                   '',
-                  `- Codex step outcome: ${process.env.CODEX_OUTCOME || 'unknown'}`,
-                  `- OPENAI_API_KEY secret visible to workflow: ${process.env.SECRET_PRESENT || 'unknown'}`,
+                  `- Codexステップの実行結果: ${process.env.CODEX_OUTCOME || 'unknown'}`,
+                  `- OPENAI_API_KEY設定済み: ${process.env.SECRET_PRESENT || 'unknown'}`,
                   '',
-                  'Open the Actions log for this run to inspect the Codex Action failure details.',
+                  '詳細はこの実行のActionsログを確認してください。',
                 ].join('\n');
 
             await github.rest.issues.createComment({
@@ -122,3 +126,77 @@ jobs:
               issue_number: context.payload.pull_request.number,
               body,
             });
+
+      - name: Create or update issue for actionable findings
+        if: "${{ contains(needs.codex-review.outputs.final_message, 'ISSUE_NEEDED: yes') }}"
+        uses: actions/github-script@v7
+        env:
+          CODEX_FINAL_MESSAGE: ${{ needs.codex-review.outputs.final_message }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const finalMessage = process.env.CODEX_FINAL_MESSAGE || '';
+            const pr = context.payload.pull_request;
+            const issueTitleMatch = finalMessage.match(/^ISSUE_TITLE:\s*(.+)$/m);
+            const rawIssueTitle = issueTitleMatch ? issueTitleMatch[1].trim() : '';
+            const issueTitle = rawIssueTitle && rawIssueTitle.toLowerCase() !== 'none'
+              ? `[Codex Review] PR #${pr.number}: ${rawIssueTitle}`
+              : `[Codex Review] PR #${pr.number}: 対応が必要なレビュー指摘`;
+
+            const issueBody = [
+              `Codexレビューで、対応が必要そうな問題が見つかりました。`,
+              '',
+              `対象PR: ${pr.html_url}`,
+              `PRタイトル: ${pr.title}`,
+              `Head: ${pr.head.ref} (${pr.head.sha})`,
+              '',
+              '## Codexレビュー結果',
+              '',
+              finalMessage,
+            ].join('\n');
+
+            try {
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: 'codex-review',
+                color: '005bac',
+                description: 'Created from Codex review findings',
+              });
+            } catch (error) {
+              if (error.status !== 422) throw error;
+            }
+
+            const existingIssues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              labels: 'codex-review',
+              per_page: 100,
+            });
+            const existing = existingIssues.find((issue) =>
+              !issue.pull_request && issue.title.startsWith(`[Codex Review] PR #${pr.number}:`)
+            );
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: [
+                  `PR #${pr.number} の更新に伴い、Codexレビュー結果を追記します。`,
+                  '',
+                  pr.html_url,
+                  '',
+                  finalMessage,
+                ].join('\n'),
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body: issueBody,
+                labels: ['codex-review'],
+              });
+            }
